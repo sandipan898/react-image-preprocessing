@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import OpenCVOperations from './components/OpenCVOperation'
+import OpenCVOperations from './components/OpenCVOperation';
+import ImageProOperations from './components/ImageProOperations';
 import { OpenCvProvider, useOpenCv } from "opencv-react";
 
 const App = () => {
@@ -9,7 +10,8 @@ const App = () => {
 
   return (
     <OpenCvProvider onLoad={onLoaded} openCvPath="/opencv/opencv.js">
-      <OpenCVOperations />
+      <ImageProOperations />
+      {/* <OpenCVOperations /> */}
     </OpenCvProvider>
   );
 };

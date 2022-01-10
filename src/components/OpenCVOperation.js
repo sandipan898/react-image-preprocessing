@@ -1,15 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { OpenCvProvider, useOpenCv } from "opencv-react";
-// import Box from '@mui/material/Box';
-// import Paper from '@mui/material/Paper';
-// import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import { Typography, Button, Checkbox } from '@mui/material'
+import Slider from '@mui/material/Slider';
+import MuiInput from '@mui/material/Input';
+import { styled } from '@mui/material/styles';
+
+
+/**
+ * 
+ * Brightness
+ * Sharpen
+ * 
+ */
+
+const Input = styled(MuiInput)`
+ width: 42px;
+`;
 
 export default function OpenCVOperations() {
     const { loaded, cv } = useOpenCv();
     console.log("loaded >> ", loaded);
     console.log("opencv details >> ", cv);
+
+    const imageRef = useRef(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [imageStatus, setImageStatus] = useState(null);
+    const [outputImageStatus, setOutputImageStatus] = useState(null);
+    const [grayScaleRotate, setGrayScaleRotate] = useState(true);
     const [grayScale, setGrayScale] = useState(true);
     const [edge, setEdge] = useState(true);
     const [rotate, setRotate] = useState(true);
@@ -17,6 +37,9 @@ export default function OpenCVOperations() {
     const [dilation, setDialation] = useState(true);
     const [src, setSrc] = useState(null);
     const [dst, setDst] = useState(null);
+    const [selectedOptions, setSelectedOptions] = useState([]);
+    const [brightnessValue, setBrightnessValue] = useState(0);
+    const [sharpnessValue, setSharpnessValue] = useState(0);
 
     const onImageChange = (e) => {
         console.log("e >> ", e.target.files[0]);
@@ -36,7 +59,8 @@ export default function OpenCVOperations() {
             // You can try more different parameters
             cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0);
             cv.imshow("canvasOutput", dst);
-            //setImageStatus(dst);
+            let imgElement = document.getElementById("canvasOutput")
+            setImageStatus(imgElement);
             src.delete();
             dst.delete();
         }
@@ -51,6 +75,8 @@ export default function OpenCVOperations() {
             // You can try more different parameters
             cv.Canny(src, dst, 50, 100, 3, false);
             cv.imshow("canvasOutput", dst);
+            let imgElement = document.getElementById("canvasOutput")
+            setImageStatus(imgElement);
             src.delete();
             dst.delete();
         }
@@ -75,6 +101,8 @@ export default function OpenCVOperations() {
                 new cv.Scalar()
             );
             cv.imshow("canvasOutput", dst);
+            let imgElement = document.getElementById("canvasOutput")
+            setImageStatus(imgElement);
             src.delete();
             dst.delete();
             M.delete();
@@ -99,6 +127,8 @@ export default function OpenCVOperations() {
                 cv.morphologyDefaultBorderValue()
             );
             cv.imshow("canvasOutput", dst);
+            let imgElement = document.getElementById("canvasOutput")
+            setImageStatus(imgElement);
             src.delete();
             dst.delete();
             M.delete();
@@ -123,107 +153,150 @@ export default function OpenCVOperations() {
                 cv.morphologyDefaultBorderValue()
             );
             cv.imshow("canvasOutput", dst);
+            let imgElement = document.getElementById("canvasOutput")
+            setImageStatus(imgElement);
             src.delete();
             dst.delete();
             M.delete();
         }
     };
 
-    if (loaded) {
-        return (
-            <>
-                <div className="inputoutput">
-                    <div className="processing">
-                        Apply Grayscale
-                        <input
-                            type="checkbox"
-                            id="RGB2Gray"
-                            name="RGB2Gray"
-                            value="Grayscale Conversion"
-                            onChange={onGrayScaleChange}
-                        />
-                        <br></br>
-                        Detect Edges
-                        <input
-                            type="checkbox"
-                            id="edgeDetection"
-                            name="edgeDetection"
-                            value="Edge Detection"
-                            onChange={onEdgeChange}
-                        />
-                        <br></br>
-                        Rotate Image
-                        <input
-                            type="checkbox"
-                            id="rotateImage"
-                            name="rotateImage"
-                            value="Rotate Image"
-                            onChange={onRotateChange}
-                        />
-                        <br></br>
-                        Image Erosion
-                        <input
-                            type="checkbox"
-                            id="erosion"
-                            name="erosion"
-                            value="Image Erosion"
-                            onChange={onErosionChange}
-                        />
-                        <br></br>
-                        Image Dilation
-                        <input
-                            type="checkbox"
-                            id="dilation"
-                            name="dilation"
-                            value="Image Dilation"
-                            onChange={onDilationChange}
-                        />
-                    </div>
-                    <img id="imageSrc" alt="No Image" />
-                    <div className="caption">
-                        imageSrc{" "}
+    const handleBrightnessChange = (event, newValue) => {
+        setBrightnessValue(newValue);
+    };
+
+    const handleSharpnessChange = (event, newValue) => {
+        setSharpnessValue(newValue);
+    };
+
+
+    return (
+        <Box sx={{ flexGrow: 1 }}>
+            <Grid container spacing={0}>
+                {loaded ?
+                    <Grid container spacing={0}>
+                        <Grid item md={5} className="inputoutput">
+                            <h4>Original Image</h4>
+                            <img id="imageSrc" height="500" width="500" alt="No Image" />
+                            <div className="caption">
+                                <input
+                                    type="file"
+                                    id="fileInput"
+                                    name="file"
+                                    onChange={(e) => onImageChange(e)}
+                                />
+                            </div>
+                        </Grid>
+                        <Grid item md={2} className="inputoutput" style={{padding: "10px"}}>
+                            <h4>Filter Options</h4>
+                            <div className="processing">
+                                <Checkbox
+                                    type="checkbox"
+                                    id="RGB2Gray"
+                                    name="RGB2Gray"
+                                    value="Grayscale Conversion"
+                                    onChange={onGrayScaleChange}
+                                    disabled={!imageStatus}
+                                />
+                                Apply Grayscale
+                                <br></br>
+                                <Checkbox
+                                    type="checkbox"
+                                    id="edgeDetection"
+                                    name="edgeDetection"
+                                    value="Edge Detection"
+                                    onChange={onEdgeChange}
+                                    disabled={!imageStatus}
+                                />
+                                Detect Edges
+                                <br></br>
+                                <Checkbox
+                                    type="checkbox"
+                                    id="rotateImage"
+                                    name="rotateImage"
+                                    value="Rotate Image"
+                                    onChange={onRotateChange}
+                                    disabled={!imageStatus}
+                                />
+                                Rotate Image
+                                <br></br>
+                                <Checkbox
+                                    type="checkbox"
+                                    id="erosion"
+                                    name="erosion"
+                                    value="Image Erosion"
+                                    onChange={onErosionChange}
+                                    disabled={!imageStatus}
+                                />
+                                Image Erosion
+                                <br></br>
+                                <Checkbox
+                                    type="checkbox"
+                                    id="dilation"
+                                    name="dilation"
+                                    value="Image Dilation"
+                                    onChange={onDilationChange}
+                                    disabled={!imageStatus}
+                                />
+                                Image Dilation
+                                <Grid item xs>
+                                    <Slider
+                                        value={typeof brightnessValue === 'number' ? brightnessValue : 0}
+                                        onChange={handleBrightnessChange}
+                                        aria-labelledby="input-slider"
+                                        valueLabelDisplay="auto"
+                                        disabled={!imageStatus}
+                                    />
+                                    Brightness: <span>{brightnessValue}</span>
+                                </Grid>
+                                <Grid item xs>
+                                    <Slider
+                                        value={typeof sharpnessValue === 'number' ? sharpnessValue : 0}
+                                        onChange={handleSharpnessChange}
+                                        aria-labelledby="input-slider"
+                                        valueLabelDisplay="auto"
+                                        disabled={!imageStatus}
+                                    />
+                                    Sharpness: <span>{sharpnessValue}</span>
+                                </Grid>
+                            </div>
+                            <br/>
+                            <Button primary variant="contained" disabled={!imageStatus}>Apply</Button>
+                        </Grid>
+                        <Grid item md={5} className="inputoutput">
+                            <h4>Processed Image</h4>
+                            <canvas height="500" width="500" id="canvasOutput"></canvas>
+                        </Grid>
+                    </Grid>
+                    :
+                    <div>
+                        <h1>Loading Opencv-React</h1>
+                        {selectedImage && (
+                            <div>
+                                <img
+                                    alt="not found"
+                                    width={"250px"}
+                                    src={URL.createObjectURL(selectedImage)}
+                                    id="img"
+                                />
+                                <br />
+                                <button onClick={() => setSelectedImage(null)}>Remove</button>
+                                <canvas id="output"></canvas>
+                            </div>
+                        )}
+                        <br />
+                        <br />
                         <input
                             type="file"
-                            id="fileInput"
-                            name="file"
-                            onChange={(e) => onImageChange(e)}
+                            name="myImage"
+                            onChange={(event) => {
+                                console.log(event.target.files[0]);
+                                setSelectedImage(event.target.files[0]);
+                            }}
                         />
                     </div>
-                </div>
-                <div className="inputoutput">
-                    <canvas id="canvasOutput"></canvas>
-                    <div className="caption">canvasOutput</div>
-                </div>
-            </>
-        );
-    } else {
-        return (
-            <div>
-                <h1>Loading Opencv-React</h1>
-                {selectedImage && (
-                    <div>
-                        <img
-                            alt="not fount"
-                            width={"250px"}
-                            src={URL.createObjectURL(selectedImage)}
-                            id="img"
-                        />
-                        <br />
-                        <button onClick={() => setSelectedImage(null)}>Remove</button>
-                        <canvas id="output"></canvas>
-                    </div>
-                )}
-                <br />
-                <br />
-                <input
-                    type="file"
-                    name="myImage"
-                    onChange={(event) => {
-                        console.log(event.target.files[0]);
-                        setSelectedImage(event.target.files[0]);
-                    }}
-                />
-            </div>
-        );
-    }
+                }
+            </Grid>
+        </Box>
+    );
 }

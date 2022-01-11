@@ -19,6 +19,10 @@ import { styled } from '@mui/material/styles';
  * Smooth / noice removal
  * Adaptive Threshlod
  * 
+ * TODO:
+ * Sharpen
+ * Crop / Perspective Transformation
+ * 
  */
 
 const Input = styled(MuiInput)`

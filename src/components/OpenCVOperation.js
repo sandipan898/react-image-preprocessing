@@ -10,9 +10,14 @@ import { styled } from '@mui/material/styles';
 
 
 /**
- * 
- * Brightness
- * Sharpen
+ * Grayscale
+ * Image Dilation
+ * Detect Edges
+ * Rotate Image
+ * Image Erosion
+ * Brightness / Contrast
+ * Smooth / noice removal
+ * Adaptive Threshlod
  * 
  */
 
@@ -23,7 +28,6 @@ const Input = styled(MuiInput)`
 export default function OpenCVOperations() {
     const { loaded, cv } = useOpenCv();
     console.log("loaded >> ", loaded);
-    console.log("opencv details >> ", cv);
 
     const imageRef = useRef(null);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -46,6 +50,7 @@ export default function OpenCVOperations() {
     const [brightImage, setBrightImage] = useState(null);
     const [smoothValue1, setSmoothValue1] = useState(0);
     const [smoothValue2, setSmoothValue2] = useState(0);
+    const [fileName, setFileName] = useState("");
 
     const onImageChange = (e) => {
         console.log("e >> ", e.target.files[0]);
@@ -53,6 +58,7 @@ export default function OpenCVOperations() {
         imgElement.src = URL.createObjectURL(e.target.files[0]);
         setImageStatus(imgElement);
         setBrightImage(imgElement);
+        setFileName(e.target.files[0].name);
         //imgElement.onload = function () {
         //};
     };
@@ -70,6 +76,13 @@ export default function OpenCVOperations() {
         setAdaptiveThreshold(0);
         src.delete();
         dst.delete();
+    }
+
+    const downloadImage = (event) => {
+        let link = document.createElement("a");
+        link.download = fileName.split(".")[0] + "_processed." + fileName.split(".")[1];
+        link.href = imageStatus.toDataURL()
+        link.click();
     }
 
     const onGrayScaleChange = () => {
@@ -223,7 +236,8 @@ export default function OpenCVOperations() {
         cv.convertScaleAbs(src, dst, alpha, beta)
         cv.imshow("canvasOutput", dst);
         let imgElement = document.getElementById("canvasOutput")
-        setBrightImage(imgElement);
+        // setBrightImage(imgElement);
+        setImageStatus(imgElement);
         src.delete();
         dst.delete();
     };
@@ -240,7 +254,7 @@ export default function OpenCVOperations() {
         let firstValue = status === 'first' ? newValue : smoothValue1;
         let secondValue = status === 'second' ? newValue : smoothValue2;
         let thirdValue = 75;
-        // cv.bilateralFilter(src, dst, firstValue, 75, thirdValue, cv.BORDER_DEFAULT);
+        // cv.bilateralFilter(src, dst, 9, secondValue, thirdValue, cv.BORDER_DEFAULT);
         cv.medianBlur(src, dst, firstValue);
         cv.imshow('canvasOutput', dst);
         let imgElement = document.getElementById("canvasOutput")
@@ -422,6 +436,7 @@ export default function OpenCVOperations() {
                         <Grid item md={4} className="inputoutput">
                             <h4>Processed Image</h4>
                             <canvas height={400} width={400} id="canvasOutput"></canvas>
+                            <Button onClick={downloadImage} primary variant="contained" disabled={!imageStatus}>Download</Button>
                         </Grid>
                     </Grid>
                     :

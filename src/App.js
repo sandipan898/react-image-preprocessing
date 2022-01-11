@@ -10,8 +10,8 @@ const App = () => {
 
   return (
     <OpenCvProvider onLoad={onLoaded} openCvPath="/opencv/opencv.js">
-      <ImageProOperations />
-      {/* <OpenCVOperations /> */}
+      {/* <ImageProOperations /> */}
+      <OpenCVOperations />
     </OpenCvProvider>
   );
 };

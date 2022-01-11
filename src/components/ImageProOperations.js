@@ -39,7 +39,7 @@ export default function ImageProOperations() {
 
     const imageRef = useRef(null);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [imageStatus, setImageStatus] = useState(null);
+    const [imageStatus, setImageStatus] = useState(false);
     const [outputImageStatus, setOutputImageStatus] = useState(null);
     const [grayScaleRotate, setGrayScaleRotate] = useState(true);
     const [grayScale, setGrayScale] = useState(true);
@@ -70,20 +70,6 @@ export default function ImageProOperations() {
     const [dither565Checked, setDither565Checked] = React.useState(false);
     const [normalizeChecked, setNormalizeChecked] = React.useState(false);
     // const classes = useStyles();
-
-    // const onImageChange = (e) => {
-    //     console.log("e >> ", e.target.files[0]);
-    //     let imgElement = document.getElementById("imageSrc");
-    //     imgElement.src = URL.createObjectURL(e.target.files[0]);
-    //     setImageStatus(imgElement);
-    //     // imageRef.current.src = e.target.files[0]
-    //     //imgElement.onload = function () {
-    //     //};
-    //     setFileName(e.target.files[0].name);
-    //     setSelectedImage(e.target.files[0]);
-    //     const urlValue = URL.createObjectURL(e.target.files[0]);
-    //     setImageSrc(URL.createObjectURL(e.target.files[0]));
-    // };
 
     const onGrayScaleChange = () => {
         setGrayScale(!grayScale);
@@ -228,7 +214,7 @@ export default function ImageProOperations() {
         }
         // let imgElement = document.getElementById("imageSrc");
         // imgElement.src = URL.createObjectURL(event.target.files[0]);
-        // setImageStatus(imgElement);
+        setImageStatus(true);
         setFileName(event.target.files[0].name);
         setSelectedImage(event.target.files[0]);
         const urlValue = URL.createObjectURL(event.target.files[0]);
@@ -332,48 +318,71 @@ export default function ImageProOperations() {
                                     value={rotate}
                                     onChange={(e) => setRotate(parseFloat(e.target.value))}
                                 />
-                                <span style={{ marginLeft: 20, fontWeight: 600 }}>Brightness :{" "}</span>
-                                <input
-                                    type="number"
-                                    min="-1"
-                                    max="1"
-                                    step="0.01"
-                                    value={brightness}
-                                    onChange={(e) => setBrightness(parseFloat(e.target.value))}
-                                />
-                                <span style={{ marginLeft: 20, fontWeight: 600 }}>Contrast :{" "}</span>
-                                <input
-                                    type="number"
-                                    min="-1"
-                                    max="1"
-                                    step="0.01"
-                                    value={contrast}
-                                    onChange={(e) => setContrast(parseFloat(e.target.value))}
-                                />
-                                <span style={{ marginLeft: 20, fontWeight: 600 }}>Fade : </span>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    max="1"
-                                    value={fade}
-                                    onChange={(e) => setFade(parseInt(e.target.value))}
-                                />
-                                <span style={{ marginLeft: 20, fontWeight: 600 }}>Posterize :{" "}</span>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    max="100"
-                                    value={posterize}
-                                    onChange={(e) => setPosterize(parseInt(e.target.value))}
-                                />
-                                <span style={{ marginLeft: 20, fontWeight: 600 }}>Quality :{" "}</span>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    max="100"
-                                    value={quality}
-                                    onChange={(e) => setQuality(parseInt(e.target.value))}
-                                />
+                                <br />
+                                <Grid container spacing={2}>
+                                    <Grid item xs={3}>
+                                        <Slider
+                                            value={brightness}
+                                            onChange={(e) => setBrightness(parseFloat(e.target.value))}
+                                            aria-labelledby="input-slider"
+                                            valueLabelDisplay="auto"
+                                            disabled={!imageStatus}
+                                        />
+                                        Brightness: <span>{brightness}</span>
+                                    </Grid>
+                                    <Grid item item xs={3}>
+                                        <Slider
+                                            value={typeof sharpnessValue === 'number' ? sharpnessValue : 0}
+                                            onChange={handleSharpnessChange}
+                                            aria-labelledby="input-slider"
+                                            valueLabelDisplay="auto"
+                                            disabled={!imageStatus}
+                                        />
+                                        Sharpness: <span>{sharpnessValue}</span>
+                                    </Grid>
+                                    <Grid item item xs={3}>
+                                        <Slider
+                                            value={contrast}
+                                            onChange={(e) => setContrast(parseFloat(e.target.value))}
+                                            aria-labelledby="input-slider"
+                                            valueLabelDisplay="auto"
+                                            disabled={!imageStatus}
+                                        />
+                                        Contrast: <span>{contrast}</span>
+                                    </Grid>
+                                    <Grid item item xs={3}>
+                                        <Slider
+                                            value={fade}
+                                            onChange={(e) => setFade(parseInt(e.target.value))}
+                                            aria-labelledby="input-slider"
+                                            valueLabelDisplay="auto"
+                                            disabled={!imageStatus}
+                                        />
+                                        Fade: <span>{fade}</span>
+                                    </Grid>
+                                </Grid>
+                                <Grid container spacing={4}>
+                                    <Grid item item xs={3}>
+                                        <Slider
+                                            value={posterize}
+                                            onChange={(e) => setPosterize(parseInt(e.target.value))}
+                                            aria-labelledby="input-slider"
+                                            valueLabelDisplay="auto"
+                                            disabled={!imageStatus}
+                                        />
+                                        Posterize: <span>{posterize}</span>
+                                    </Grid>
+                                    <Grid item item xs={3}>
+                                        <Slider
+                                            value={quality}
+                                            onChange={(e) => setQuality(parseInt(e.target.value))}
+                                            aria-labelledby="input-slider"
+                                            valueLabelDisplay="auto"
+                                            disabled={!imageStatus}
+                                        />
+                                        Quality: <span>{quality}</span>
+                                    </Grid>
+                                </Grid>
                             </div>
                         </Paper>
                     </Grid>
